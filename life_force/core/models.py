@@ -63,16 +63,22 @@ class User(AbstractUser):
 
 
 
+
 class Client(User):
+    first_name = models.CharField(max_length=200, null=True, blank=True)
+    last_name = models.CharField(max_length=200, null=True, blank=True)
     phone_number = models.CharField(max_length=200, null=True, blank=True)
     location = models.CharField(max_length=250, null=True, blank=True)
-    nin = models.IntegerField(null=True)
-    age = models.IntegerField(default=19, null=True)
-    weight = models.IntegerField(default=130, null=True)
+    nin = models.CharField(null=True, max_length=3, blank=True)
+    age = models.CharField(null=True, max_length=3, blank=True)
+    weight = models.CharField(null=True, max_length=3, blank=True)
     blood_group = models.CharField(max_length=4, null=True)
     wants_to_donate = models.BooleanField(default=True)
     needs_donation = models.BooleanField(default=False)
     base_role = User.Role.CLIENT
+    is_verified = models.BooleanField(default=False)
+    donations = models.IntegerField(default=0)
+
 
     #learn 1 to 1 rel
 
@@ -85,6 +91,7 @@ class Organization(User):
     location = models.CharField(max_length=250)
     address = models.TextField(null=True, blank=True)
     base_role = User.Role.ORGANIZATION
+    is_verified = models.BooleanField(default=False)
 
     #learn 1 to 1 rel
 

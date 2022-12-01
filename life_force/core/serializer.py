@@ -3,10 +3,23 @@ from .models import Client, Organization
 
 
 
+class ClientSignup(serializers.ModelSerializer):
+    class Meta:
+        model = Client
+        fields = [
+            'email', 
+            'password'
+            ]
+
+
+
+
 class ClientCompleteRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = [
+            "first_name",
+            "last_name"
             "phone_number",
             "location",
             "age",
@@ -24,3 +37,13 @@ class OrganizationCompleteRegistrationSerializer(serializers.ModelSerializer):
             "location",
    
         ]
+
+class ClientMarketplace(serializers.ModelSerializer):
+    class Meta:
+        model = Client
+        fields = ['first_name',
+                    'last_name',
+                    'blood_group',
+                    'age',
+                    'weight',
+                    'is_verified']
