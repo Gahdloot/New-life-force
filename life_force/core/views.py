@@ -13,15 +13,28 @@ from django_filters.utils import translate_validation
 # Create your views here.
 
 
+@api_view(['GET'])
+def home(request):
+    data = {}
+    data['success'] = True
+    data['message'] = 'Nigeria collects only 500,000 pints yearly, which represent only 36.7%\ of blood donation capacity. You can help make up for the 73.3%\ shortfall.'
+    return Response(data)
+
+
 @api_view(['POST'])
 def Client_sign_up(request):
     """
     Accepts only email and password only
     """
-    user = Client(email=request.data['email'], password=request.data['password'])
-    user.save()
-    token, created = Token.objects.get_or_create(user=user)
-    return Response({'user': user.email, 'token': token.key})
+    try:
+        Account = Client.objects.get(email=request.data)
+        return Response({'success':False, 'message':'email exist already'}, status=status.HTTP_226_IM_USED)
+    except:
+    
+        user = Client(email=request.data['email'], password=request.data['password'])
+        user.save()
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'user': user.email, 'token': token.key})
 
 
 
@@ -30,16 +43,21 @@ def Organization_sign_up(request):
     """
     Accepts only email and password only
     """
-    user = Organization(email=request.data['email'], password=request.data['password'])
-    user.save()
-    token, created = Token.objects.get_or_create(user=user)
-    return Response({'user': user.email, 'token': token.key})
+    try:
+        Account = Organization.objects.get(email=request.data)
+        return Response({'success':False, 'message':'email exist already'}, status=status.HTTP_226_IM_USED)
+    except:
+    
+        user = Organization(email=request.data['email'], password=request.data['password'])
+        user.save()
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'user': user.email, 'token': token.key})
 
 
 
 
 
-@api_view(["POST"])
+@api_view(["GET"])
 @permission_classes([AllowAny])
 def login_user(request):
 
@@ -133,7 +151,7 @@ def kyc_verification(request):
 
 
 
-@api_view('GET')
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def dashboard(request):
     if request.user.base_role == User.Role.CLIENT:
@@ -155,7 +173,7 @@ def dashboard(request):
     return Response({'sucess':False, 'message':'email doesnot exist'}, status=status.HTTP_302_FOUND)
 
 
-@api_view('GET')
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def marketpalce(request):
     all_accounts = Client.objects.all()

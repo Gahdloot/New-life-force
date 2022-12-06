@@ -68,8 +68,12 @@ WSGI_APPLICATION = 'life_force.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'MpcWNsak3ieLWpf7XrAq',
+        'HOST': 'containers-us-west-143.railway.app',
+        'PORT': '8011',
     }
 }
 

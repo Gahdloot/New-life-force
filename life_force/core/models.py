@@ -65,8 +65,6 @@ class User(AbstractUser):
 
 
 class Client(User):
-    first_name = models.CharField(max_length=200, null=True, blank=True)
-    last_name = models.CharField(max_length=200, null=True, blank=True)
     phone_number = models.CharField(max_length=200, null=True, blank=True)
     location = models.CharField(max_length=250, null=True, blank=True)
     nin = models.CharField(null=True, max_length=3, blank=True)
