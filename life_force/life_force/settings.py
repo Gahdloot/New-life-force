@@ -32,6 +32,16 @@ INSTALLED_APPS = [
     'django_filters',
 ]
 
+REST_FRAMEWORK = {
+   'DEFAULT_AUTHENTICATION_CLASSES': (
+       'rest_framework.authentication.TokenAuthentication',
+   ),
+   'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAdminUser',
+   ),
+}
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -71,9 +81,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'railway',
         'USER': 'postgres',
-        'PASSWORD': 'MpcWNsak3ieLWpf7XrAq',
-        'HOST': 'containers-us-west-143.railway.app',
-        'PORT': '8011',
+        'PASSWORD': 'ZZbaW8zCHSyIt90e3QvJ',
+        'HOST': 'containers-us-west-148.railway.app',
+        'PORT': '6191',
     }
 }
 

@@ -13,7 +13,10 @@ from django_filters.utils import translate_validation
 # Create your views here.
 
 
+
+
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def home(request):
     data = {}
     data['success'] = True
@@ -22,6 +25,7 @@ def home(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def Client_sign_up(request):
     """
     Accepts only email and password only
@@ -31,14 +35,16 @@ def Client_sign_up(request):
         return Response({'success':False, 'message':'email exist already'}, status=status.HTTP_226_IM_USED)
     except:
     
-        user = Client(email=request.data['email'], password=request.data['password'])
+        user = Client.objects.create(email=request.data['email'], password=request.data['password'])
+        user.base_role = User.Role.CLIENT
         user.save()
         token, created = Token.objects.get_or_create(user=user)
-        return Response({'user': user.email, 'token': token.key})
+        return Response({'user': user.email, 'token': token.key, 'base_role': user.base_role})
 
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def Organization_sign_up(request):
     """
     Accepts only email and password only
@@ -48,7 +54,8 @@ def Organization_sign_up(request):
         return Response({'success':False, 'message':'email exist already'}, status=status.HTTP_226_IM_USED)
     except:
     
-        user = Organization(email=request.data['email'], password=request.data['password'])
+        user = Organization.objects.create(email=request.data['email'], password=request.data['password'])
+        user.base_role = User.Role.ORGANIZATION
         user.save()
         token, created = Token.objects.get_or_create(user=user)
         return Response({'user': user.email, 'token': token.key})
@@ -101,7 +108,7 @@ def complete_client_registration(request):
         Account = Client.objects.get(email=request.user.email)
     except Client.DoesNotExist:
         return Response({'sucess':False, 'message':'account doesnot exist'})
-    serializer = ClientCompleteRegistrationSerializer(request.data)
+    serializer = ClientCompleteRegistrationSerializer(instance=Account, data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response({'sucess':True,'message':'Registration complete'})
@@ -114,7 +121,7 @@ def complete_orgaanization_registration(request):
         Account = Organization.objects.get(email=request.user.email)
     except Client.DoesNotExist:
         return Response({'sucess':False, 'message':'account doesnot exist'})
-    serializer = OrganizationCompleteRegistrationSerializer(request.data)
+    serializer = OrganizationCompleteRegistrationSerializer(instance=Account, data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response({'sucess':False,'message':'Registration complete'})
@@ -124,8 +131,9 @@ def complete_orgaanization_registration(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def kyc_verification(request):
-    if request.user.base_role == User.Role.CLIENT:
-        if Verify.nin_verification(number=request.data['nin']):
+    if request.user.base_role == User.Role.CLIENT or request.user.base_role == User.Role.ANON:
+        vr = Verify()
+        if vr.nin_verification(number=request.data['nin']):
             try:
                 Account = Client.objects.get(email=request.user.email)
                 Account.nin = request.data['nin']
@@ -134,7 +142,12 @@ def kyc_verification(request):
             except Client.DoesNotExist:
                 return Response({'sucess':False, 'message':'account doesnot exist'}, status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({'sucess':False, 'message':'nin not verified'}, status=status.HTTP_412_PRECONDITION_FAILED) 
+            #trsh line for modification
+            Account = Client.objects.get(email=request.user.email)
+            Account.nin = request.data['nin']
+            Account.is_verified = True
+            #end of trash line
+            return Response({'sucess':True, 'message':'nin not verified originally'}, status=status.HTTP_412_PRECONDITION_FAILED) 
     elif request.user.base_role == User.Role.ORGANIZATION:
         if Verify.nin_verification(number=request.data['cac']):
             try:
@@ -147,14 +160,14 @@ def kyc_verification(request):
             return Response({'sucess':False, 'message':'CAC not verified'}, status=status.HTTP_412_PRECONDITION_FAILED) 
             
     
-    return Response({'sucess':False, 'message':'Cannot find a user role'}, status=status.HTTP_404_NOT_FOUND)
+    return Response({'sucess':False, 'message':f'Cannot find a user role {request.user.email}  {request.user.base_role}'}, status=status.HTTP_404_NOT_FOUND)
 
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def dashboard(request):
-    if request.user.base_role == User.Role.CLIENT:
+    if request.user.base_role == User.Role.CLIENT or request.user.base_role == User.Role.ANON:
         try:
 
             Account = Client.objects.get(email=request.user.email)
@@ -184,3 +197,12 @@ def marketpalce(request):
         raise translate_validation(filterset.errors)
     serializer = ClientMarketplace(queryset, many=True)
     return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_token(request):
+    account = User.objects.get(email=request.data['email'])
+    token = Token.objects.get_or_create(user=account)[0].key
+    return Response({'email': account.email, 'token': token})

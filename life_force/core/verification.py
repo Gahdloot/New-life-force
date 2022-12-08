@@ -23,7 +23,7 @@ class Verify:
 
         if response.json()['status'] == True and response.json()['verification']["status"] == "VERIFIED":
             return True
-        return False
+        return response.json()
 
     def cac_verification(self, **kwargs):
         response = requests.post(Verify.URL, query=kwargs, headers=Verify.HEADERS)
@@ -32,3 +32,7 @@ class Verify:
             return True
         return False
 
+
+
+# vr = Verify()
+# print(vr.nin_verification(number='AA1234567890123B', number_nin=2147483647))

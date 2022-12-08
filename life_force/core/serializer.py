@@ -17,9 +17,10 @@ class ClientSignup(serializers.ModelSerializer):
 class ClientCompleteRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
+        read_only_fields = ['email', 'password']
         fields = [
             "first_name",
-            "last_name"
+            "last_name",
             "phone_number",
             "location",
             "age",
@@ -32,6 +33,7 @@ class ClientCompleteRegistrationSerializer(serializers.ModelSerializer):
 class OrganizationCompleteRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
+        read_only_fields = ['email', 'password']
         fields = [
             "company_name",
             "location",
