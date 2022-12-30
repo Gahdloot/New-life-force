@@ -7,8 +7,8 @@
 
 <ul>
   <li>Validation of donors and hospitals/organizations using prembly API</li>
-  <li> Indicating hospitals available to donation</li>
-  <li>Customizable payment formThe use of algorithm to pair hospitals/ organizations to donors</li>
+  <li> Indicating hospitals available for donation</li>
+  <li>The use of algorithm to pair hospitals/ organizations to donors</li>
   <li>Specifying rules for the timing of donations</li>
 </ul>
 
@@ -39,3 +39,4 @@
 <h2>Documentation</h2>
 
 <p>For full documentation, see <a href="#">https://New-life-force.readthedocs.io/</a>.</p>
+<p><em>Written by Deborah Eluagu</em></p>
